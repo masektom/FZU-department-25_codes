@@ -75,3 +75,97 @@ The Phase 3 is longterm observation of the semiconductor after illumination. Thi
         plot                = ["I_t", "I_log"],
 ```
 Again, we must specify the output directory, where the measured data will be exported to in .txt files. There is also an option for plotting the measured data after measurement. This is quite usefull for first evaluation if anything needs to be remeasured.
+
+## Current Plotter
+This script is made for the evaluation of measured characteristics using the script above. It has several functions, which can be quite usefull, such as marking of the times, it takes for the current to fall some order of magnitude and several plotting options for comparison of multiple measurements. Compared to otheer scripts, loading of the files is quite automatic. Only thing, that is needed to change is the address of root directory, i.e. where all of the measurements starts. After this is specified, the script will create a list of all .txt files with the data and assign it a number, which then can be used for specifying which measurements to plot in the same graph. Below is the entry point, which is at the end of the script. Firstly, it is needed to run it one time to create the list. When it is already created, then it is possible to run it by the command bellow.  
+```
+# =============================================================================
+#  ── ENTRY POINT ──────────────────────────────────────────────────────────────
+# =============================================================================
+if __name__ == "__main__":
+    # On first run the catalogue is printed automatically.
+    _ensure_scanned()
+    mrun([4, 18, 30, 42, 65], mode="side", decay_markers=True)
+    mrun([4, 18, 30, 42, 65], mode="overlay")
+    # ── Example calls (uncomment or adapt) ────────────────────────────────────
+
+    # ---- Example calls (uncomment or adapt) ----------------------------------
+
+    # Overlay - default, all annotations on:
+    # mrun([0, 1])
+
+    # Overlay without decay markers (cleaner for a quick look):
+    # mrun([0, 1], decay_markers=False)
+
+    # Side by side with decay markers:
+    # mrun([0, 1], mode="side")
+
+    # Side by side without decay markers:
+    # mrun([0, 1], mode="side", decay_markers=False)
+
+    # All files for one method at 10 V (dark + illuminated together):
+    # idx = [f["index"] for f in _FILES
+    #        if f["method"] == "DC-MAG" and f["voltage"] == 10.0]
+    # mrun(idx)
+
+    # Compare one sample across all methods at 50 V, side by side:
+    # idx = [f["index"] for f in _FILES
+    #        if f["sample"] == "TiO2_067_SAP" and f["voltage"] == 50.0]
+    # mrun(idx, mode="side")
+```
+At the beggining of the script, there is a tutorial for the use of this script, therefore, I will put it here, as it will be better, than my explanation. In the directory with the scripts, there will be a folder with examples of these graphs, so one does not need to imagine, what will the graphs look like.
+```
+Offline plotter for .txt files produced by Current_measurement.py
+(Keithley 6487 three-phase current monitor).
+
+Directory structure assumed
+---------------------------
+<root>/                         e.g.  C:\\...\\TiO2
+  <method>/                     e.g.  DC-MAG
+    <sample>/                   e.g.  TiO2_067_SAP
+      *.txt                           illuminated measurements (10 / 50 / 100 V)
+      Dark_bef/
+        *.txt                         dark-before measurements
+
+HOW TO USE
+----------
+1.  Set ROOT_DIR to the top-level TiO2 folder.
+2.  Run the script.  It will scan the whole tree and print a numbered
+    catalogue of every .txt file it finds.
+3.  Call mrun() with the indices (or index ranges) you want to compare.
+
+    mrun(selection)                          <- overlay, all annotations on
+    mrun(selection, mode="side")             <- side-by-side subplots
+    mrun(selection, decay_markers=False)     <- hide decay-time markers
+
+    Examples:
+        mrun([0, 1, 2])                      # overlay (default)
+        mrun("0-2", mode="side")             # side-by-side subplots
+        mrun([0, "3-5", 10])                 # mix of indices and ranges
+        mrun("all")                          # overlay every file (use with care)
+        mrun([0, 1], decay_markers=False)    # no decay annotations
+
+Plot output
+-----------
+Two figures are always produced per call:
+  Fig 1 - Current vs Time  (linear Y axis)
+  Fig 2 - Current vs Time  (logarithmic Y axis, |I| plotted)
+
+  mode="overlay"  -> single pair of axes; each file is a different colour
+  mode="side"     -> one subplot column per file; rows = linear / log
+
+Per-file annotations (illuminated files only):
+  ......  dotted horizontal line  = mean dark current (from the paired Dark_bef
+            file in the selection if present, otherwise from the slow_pre phase)
+  *       star marker             = peak (max absolute) current
+  v       triangle-down marker    = time after peak where I drops to I_peak / 2
+  s       square marker           = time after peak where I drops by 1 order of magnitude
+  o       circle marker           = time after peak where I drops by 2 orders of magnitude
+
+  If a threshold is never reached the time is shown as inf in the legend.
+
+Dark measurement files are drawn with dashed lines.
+Each file gets its own tab10 colour so overlapping traces are distinguishable.
+
+Dependencies:  pip install numpy matplotlib
+```
