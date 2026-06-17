@@ -77,9 +77,9 @@ plt.grid(color='black', linestyle='dashed', linewidth=0.5)
 This prints legend in the graph, be aware, location is quite tricky and depends on white spaces and the size of the legend, therefore by specifing with the command _bbox_to_anchor=(1, 1)_ this puts it outside of the xy area on the right side. By including the _grid_ command, grid can be added. In the .py file you can find two types of graphs, one without grid is commented.
 If more graphs are needed, duplicate the commands from _plt.figure_ to _plt.show()_ which creates seperate windows.
 
-## XRD Muller indeces calculation
-Using this code, it is possible to calculate any Bravaise lattice Muller indices, interplanar distance d_hkl and its position in XRD spectra.
-Again, only parameters that needs to be changed are at the end of the script. Only one, that is at the start of the script is the wavelength of the source, as at FZU we use CuKa, it is made as standard for all the calculation.
+## XRD Miller indeces calculation
+Using this code, it is possible to calculate any Bravaise lattice Miller indices, interplanar distance d_hkl and its position in XRD spectra.
+Again, only parameters that needs to be changed are at the end of the script. Only one, that is at the start of the script is the wavelength of the source, as at FZU we use CuKa, it is made as standard for all the calculation below.
 ### Usage
 ```
 # ---------------------------------------------------------------------------
@@ -102,4 +102,4 @@ if __name__ == "__main__":
     # Monoclinic(a=5.43, b=6.21, c=7.05, beta_deg=110.5, directory=output_dir, number=3, filename="Mono_XRD.txt")
     # Triclinic(a=5.0, b=6.0, c=7.0, alpha_deg=80, beta_deg=85, gamma_deg=95, directory=output_dir, number=2, filename="Tri_XRD.txt")
 ```
-It is made for the most optimal use for the user. First it is needed to specify the output directory using the address of such files. After that, it depends on what Bravaise lattice is needed. It is called as a function using the name of the lattice. After that you need to specify lattice parameters of the unit cell depending on the type of lattice, i.e. some have only a,c others can have a,b,c. If the angles are not 90°, then it is needed to specify these angles in degrees. Then there is the **number** parameter. This specify up to which Muller index you want to calculate all the parameters, i.e. number=3 means up to (333). Then just specify the name of the .txt file and it will output it as __Muller indeces, d_space, 2theta__. It is the same format as used for plotting the results in XRD plotter.
+It is made for the most optimal use for the user. First it is needed to specify the output directory using the address of such file. After that, it depends on what Bravaise lattice is needed. They are callable functions using the name of the lattice. After that you need to specify lattice parameters of the unit cell depending on the type of lattice, i.e. some have only a,c others can have a,b,c. If the angles are not 90°, then it is needed to specify these angles in degrees. Then there is the **number** parameter. This specifie up to which Miller index you want to calculate all the parameters, i.e. number=3 means up to (333). Then just specify the name of the .txt file and it will output it in a format as __Miller indeces, d_space, 2theta__. It is the same format as used for plotting the results in XRD plotter.
