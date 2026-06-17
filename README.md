@@ -77,7 +77,7 @@ plt.grid(color='black', linestyle='dashed', linewidth=0.5)
 This prints legend in the graph, be aware, location is quite tricky and depends on white spaces and the size of the legend, therefore by specifing with the command _bbox_to_anchor=(1, 1)_ this puts it outside of the xy area on the right side. By including the _grid_ command, grid can be added. In the .py file you can find two types of graphs, one without grid is commented.
 If more graphs are needed, duplicate the commands from _plt.figure_ to _plt.show()_ which creates seperate windows.
 
-## XRD Miller indeces calculation
+## XRD Muller indeces calculation
 Using this code, it is possible to calculate any Bravaise lattice Muller indices, interplanar distance d_hkl and its position in XRD spectra.
 Again, only parameters that needs to be changed are at the end of the script. Only one, that is at the start of the script is the wavelength of the source, as at FZU we use CuKa, it is made as standard for all the calculation.
 ### Usage
