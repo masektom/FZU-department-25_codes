@@ -78,28 +78,28 @@ This prints legend in the graph, be aware, location is quite tricky and depends 
 If more graphs are needed, duplicate the commands from _plt.figure_ to _plt.show()_ which creates seperate windows.
 
 ## XRD Miller indeces calculation
-At this moment this script is quite simple and can calculate only Miller indices, interplanar spacing and corresponding angle for XRD measurement. I might add more functions to be able to calculate all possible crystal structures.
+Using this code, it is possible to calculate any Bravaise lattice Muller indices, interplanar distance d_hkl and its position in XRD spectra.
+Again, only parameters that needs to be changed are at the end of the script. Only one, that is at the start of the script is the wavelength of the source, as at FZU we use CuKa, it is made as standard for all the calculation.
+### Usage
 ```
-a = 3.803 #Å - SnO
-#a = 4.738 #Å - SnO2
-c = 4.838 #Å - SnO
-#c = 3.186 #Å - SnO2
-CuKa = 1.54184 #Å
-with open("C:\Škola\Škola_CVUT\Diplomová práce\Výsledky\XRD\SnO_XRD.txt", "w") as file:  # Open a file in write mode
-    for h in range(4):  # Outer loop (0 to 2)
-        for k in range(4):  # Middle loop (0 to 2)
-            for l in range(4):  # Inner loop (0 to 2)
-                if h == 0 and k == 0 and l == 0:  # Check if all variables are zero
-                    SnO_XRD = f"rovina, d_space, 2theta\n"
-                else:
-                    if k > h:
-                        continue
-                    else:
-                        d = round((a*c)/np.sqrt(c**2*(h**2+k**2)+a**2*l**2), 5)
-                        Th = round(mt.degrees(2*mt.asin(CuKa/(2*d))), 2)
-                        SnO_XRD = f"({h}{k}{l}), {d}, {Th}\n"
-                print(SnO_XRD.strip())  # Print to console
-                file.write(SnO_XRD)  # Write to the file
+# ---------------------------------------------------------------------------
+# Example usage
+# ---------------------------------------------------------------------------
+
+if __name__ == "__main__":
+    output_dir = r"C:\Škola\Škola_CVUT\Diplomová práce\Výsledky\XRD\test"
+
+    # SnO - tetragonal
+    Tetragonal(a=3.803, c=4.838, directory=output_dir, number=3, filename="SnO_XRD_test.txt")
+
+    # SnO2 - tetragonal (uncomment to use)
+    # Tetragonal(a=4.738, c=3.186, directory=output_dir, number=3, filename="SnO2_XRD.txt")
+
+    # Other lattice examples:
+    # Cubic(a=4.065, directory=output_dir, number=3, filename="Al_XRD.txt")
+    # Hexagonal(a=3.21, c=5.21, directory=output_dir, number=3, filename="Ti_XRD.txt")
+    # Orthorhombic(a=5.43, b=6.21, c=7.05, directory=output_dir, number=3, filename="Ortho_XRD.txt")
+    # Monoclinic(a=5.43, b=6.21, c=7.05, beta_deg=110.5, directory=output_dir, number=3, filename="Mono_XRD.txt")
+    # Triclinic(a=5.0, b=6.0, c=7.0, alpha_deg=80, beta_deg=85, gamma_deg=95, directory=output_dir, number=2, filename="Tri_XRD.txt")
 ```
-Firstly, one needs the lattice parameters **_a, b, c_**, this can be found in articles or some tables. Depending on the type unit cell, you need all of them or just few of them, when the angles are not 90deg then you will also need the angles. You input it in Å. Then you need the length of the xray _CuKa_, which is defined by the source.
-Then there is the script itself, first it creates .txt file in the designated address, afterwhich it eneters in to three for cycles, which corresponds to the miller indices, where you can change to which extent you want to calculate with the _range_ parameter. When every index is zero, it first writes a header in to the document. Because indexes _h_ and _k_ cannot be distinguished, it skips one possible combination of them as not to duplicate results. If no other condition is obstructing, then it calculates the interplanar spacing and the angle and prints them in the document. This cycles until all for cycles are finished.
+It is made for the most optimal use for the user. First it is needed to specify the output directory using the address of such files. After that, it depends on what Bravaise lattice is needed. It is called as a function using the name of the lattice. After that you need to specify lattice parameters of the unit cell depending on the type of lattice, i.e. some have only a,c others can have a,b,c. If the angles are not 90°, then it is needed to specify these angles in degrees. Then there is the **number** parameter. This specify up to which Muller index you want to calculate all the parameters, i.e. number=3 means up to (333). Then just specify the name of the .txt file and it will output it as __Muller indeces, d_space, 2theta__. It is the same format as used for plotting the results in XRD plotter.
