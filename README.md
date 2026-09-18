@@ -103,3 +103,66 @@ if __name__ == "__main__":
     # Triclinic(a=5.0, b=6.0, c=7.0, alpha_deg=80, beta_deg=85, gamma_deg=95, directory=output_dir, number=2, filename="Tri_XRD.txt")
 ```
 It is made for the most optimal use for the user. First it is needed to specify the output directory using the address of such file. After that, it depends on what Bravaise lattice is needed. They are callable functions using the name of the lattice. After that you need to specify lattice parameters of the unit cell depending on the type of lattice, i.e. some have only a,c others can have a,b,c. If the angles are not 90°, then it is needed to specify these angles in degrees. Then there is the **number** parameter. This specifie up to which Miller index you want to calculate all the parameters, i.e. number=3 means up to (333). Then just specify the name of the .txt file and it will output it in a format as __Miller indeces, d_space, 2theta__. It is the same format as used for plotting the results in XRD plotter.
+
+## Modified Scherrer equation calculation
+Using this script, it is possible to calculate crystal size from XRD spectra from multiple peaks. As with my other codes, there is an input section at the end, where the parameters can be changed.
+### Usage
+```
+# =============================================================================
+#  Convenience entry point - run directly:  python modified_scherrer.py
+#  Or paste/edit the block below into a Spyder cell and press Ctrl+Enter.
+# =============================================================================
+
+if __name__ == "__main__":
+
+    m = ModifiedScherrer(
+        xy_file            = r"C:\...\.xy",   # << your pattern file
+        label              = "SnO2_RT_final",     # free text, goes into the output file names
+        # ── Instrument ────────────────────────────────────────────────
+        wavelength         = 0.154060,   # nm -> Cu Ka1. Cu Ka average = 0.15418
+        K                  = 0.89,      # Scherrer shape factor used in the paper
+        instrumental_fwhm  = 0.0,       # deg -> from a LaB6/Si standard, e.g. 0.08
+        two_theta_min      = 10.0,
+        two_theta_max      = 90.0,
+        # ── Peak detection (run 1: every peak gets an ID, P1, P2, ...) ─
+        dry_run            = False,     # << True = only detect, fit and list the
+                                        #    peaks with their IDs, then stop
+        prominence_frac    = 0.02,      # threshold as a fraction of max intensity
+        min_distance_deg   = 3,      # deg -> minimum peak separation Recommended value = 0.3
+        # ── Which peaks to use (run 2) ────────────────────────────────
+        #   MANUAL : use_peaks = ["P10", "P23", "P28", "P34", "P38", "P40", "P42"]
+        #            (IDs come from the dry run; plain numbers like [10, 23] work too)
+        #   AUTO   : use_peaks = None -> take the cleanly fitted peaks, strongest
+        #            first, limited by min_intensity and n_peaks below
+        use_peaks          = None,
+        #use_peaks          = ["P6", "P7", "P12", "P13", "P14"],
+        exclude_peaks      = [],        # IDs to drop from whatever was selected
+        lock_peaks         = [],        # IDs the outlier pruning may never remove
+        n_peaks            = 12,        # AUTO only: keep the N most intense
+        min_intensity      = None,      # AUTO only: net-height cutoff in counts None
+        # ── Profile fitting ───────────────────────────────────────────
+        profile            = "pseudo_voigt",  # "pseudo_voigt"|"gaussian"|"lorentzian"
+        fit_window_factor  = 3.0,       # window half width = factor * rough FWHM, Recommended value = 3.0
+        min_fit_r2         = 0.2,      # flags bad profile fits. 0 = accept everything, Recommended value = 0.8
+        # ── Modified Scherrer rules ───────────────────────────────────
+        prune_outliers     = True,    # False = fit exactly the peaks you gave
+        #prune_outliers     = False,
+        min_peaks_kept     = 5,         # never prune below this many peaks
+        slope_tolerance    = 0.15,      # stop pruning once |slope - 1| < this
+        paper_rad_factor   = False,     # True reproduces the paper's rounded 0.0174
+        # ── Output ────────────────────────────────────────────────────
+        output_dir         = r"C:\...",      # folder for report .txt, .csv and .png
+        # Choose any combination of the three plot types, or None to skip.
+        #   "pattern"  – measured pattern with every peak marked and labelled
+        #   "fits"     – the profile fits, so you can check each FWHM
+        #   "scherrer" – the Ln beta vs Ln(1/cos theta) plot
+        plot = ["pattern", "scherrer", "fits"],
+        verbose            = True,
+    )
+
+    res = m.run()
+    ```
+Firstly, the address for the .xy file from XRD must be changed in **xy_file** parameters and the address of the output directory, where it will put the graphs and results in **output_dir** parameter.
+There are several sections, that can be changed. If the spectra is measured at different machine than it is at FZU, you will need to change the section **Instrument**, otherwise it is setup for our machine. Section **Peak detection** can be usefull, as it can firstly look at the measured spectra, identify and fit the peaks, and output the list of the peaks. This can be good for optimizing the parameters such as **min_distance_deg, min_fit_r2, min_intensity, etc.** For normal output the **dry_run** shall be set as **False**, otherwise, if you want the optimatization process set it as **True**.
+Then there is the main calculation. It can be set as automatic, i.e. you just set the adresses of the files and it does everything for you and outputs the value of crystal size from scherrer formula. For this mode the parameter **use_peaks** must be set as **None**. Sometimes there might be a problem, that the software uses some peaks, that are unwanted or you have two phases of material in you sample. That is why the **Manual** mode was added. For that, you first need the IDs of the peaks from dry_run or first automatic run. In the **use_peaks** parameter you input the list of the peaks that should be considered for the calculation as **["P6", "P7", "P12", "P13", "P14"]**. The optimatization proccess relies on the pruning of the outliers, this means, that it will try to not count peaks at higher degrees, which can skew results. If you want to use this optimatization (which is recommended), the parameter **prune_outliers** as **True**. Turn it **False** only if you want to fit the manually selected peaks.
+The usage is quite easy, when the operator gets used to, which parameter changes what, it can be made used on samples which have quite difficult XRD spectra with several phases of different materials.
