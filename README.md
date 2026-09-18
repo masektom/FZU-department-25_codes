@@ -14,3 +14,8 @@ Script for the measurement with examples of the graphs you can obtain, script fo
 Replaced vypocet_rovin.py with XRD_lattice_calculation.py
 ### New functions
 Before it was only calculation for Tetragonal lattice, now it is possible to calculate Miller indices, d_hkl and position 2theta for any Bravais lattice. Quickly looked through the formulas and they should be correct, but I did not yet test it for every type of lattice, therefore while using this script, check if the results are correct.
+
+## 18.9.2026 - Scherrer script added
+Added Modified_Scherrer.py
+### Functions
+Script for calculation of crystal size from XRD spectra using modified Scherrer formula based on an article Modified Scherrer equation to calculate crystal size by XRD with high accuracy, examples Fe2O3, TiO2 and V2O5, Sohrab Nasiri et al., Nano Trends.
